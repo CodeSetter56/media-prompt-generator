@@ -1,4 +1,5 @@
 import ImageUpload from "@/components/ImageUpload";
+import { InputForm } from "@/components/InputForm";
 import React from "react";
 
 function page() {
@@ -9,7 +10,7 @@ function page() {
       </div>
 
       <div className="w-1/2 flex h-full">
-      {/* inputform */}
+        <InputForm/>
       </div>
     </>
   );
