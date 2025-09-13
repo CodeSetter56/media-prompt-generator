@@ -1,7 +1,5 @@
 "use client";
 
-import { FaInstagram, FaFacebook, FaTwitter } from "react-icons/fa";
-
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,42 +18,20 @@ import {
 } from "@/components/ui/form";
 
 import { SocialToggleButton } from "./SocialToggleButton";
+import { socialButtonsConfig } from "@/lib/utils/socialPlatforms";
+import { formSchema } from "@/lib/schema/formSchema";
+import { useGenerationStore } from "@/store/generationStore";
 
-const socialButtonsConfig = [
-  {
-    id: "instagram", 
-    label: "Share on Instagram", 
-    icon: FaInstagram, 
-    activeColor: "#E1306C", 
-  },
-  {
-    id: "facebook",
-    label: "Share on Facebook",
-    icon: FaFacebook,
-    activeColor: "#1877F2",
-  },
-  {
-    id: "twitter",
-    label: "Share on Twitter",
-    icon: FaTwitter,
-    activeColor: "#1DA1F2",
-  },
-];
+
 
 // form validation schema 
-const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.", 
-  }),
-  context: z
-    .string()
-    .max(300, {
-      message: "Context must not exceed 300 characters.",
-    })
-    .optional(),
-});
 
-export function InputForm() {
+interface fileProp{
+  file:File|null
+}
+
+export function InputForm({file}:fileProp) {
+  const { generate, isLoading, error } = useGenerationStore();
   const [socialToggles, setSocialToggles] = useState({
     // socialbuttonconfig id
     instagram: false,
@@ -80,10 +56,6 @@ export function InputForm() {
     }));
   };
 
-  function formSubmit(values: z.infer<typeof formSchema>) {
-    console.log({ ...values, shareOptions: socialToggles });
-  }
-
   const handleContextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
     field: { onChange: (value: string) => void; value?: string }
@@ -104,7 +76,18 @@ export function InputForm() {
       field.onChange(correctedLines); // Update form state 
     }
   };
-
+  
+  async function formSubmit(values: z.infer<typeof formSchema>) {
+    if (!file) {
+      alert("Please upload an image first!");
+      return;
+    }
+    console.log("Image File:", file);
+    console.log("Form Values:", values);
+    console.log("Social Platforms:", socialToggles);
+    await generate({ file, values, socialToggles });
+  }
+ 
   return (
     <Form {...form}>
       <form

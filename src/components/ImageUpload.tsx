@@ -1,17 +1,15 @@
 "use client";
 
+import { MyFile } from "@/types";
 import React, { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 
-interface MyFile extends File {
-  preview: string;
-  width: number;
-  height: number;
-  orientation: "portrait" | "landscape" | "square";
+interface imgProps{
+  file: MyFile|null,
+  setFile: (file: MyFile|null)=>void
 }
 
-export default function ImageUpload() {
-  const [file, setFile] = useState<MyFile | null>(null);
+export default function ImageUpload({file,setFile}:imgProps) {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length) {
